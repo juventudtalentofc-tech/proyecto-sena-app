@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista del Estudiante - Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --color-primary: #4a6fa5;
+            --color-secondary: #166088;
+            --color-accent: #4fc3f7;
+            --color-success: #28a745;
+            --color-warning: #ffc107;
+            --color-danger: #dc3545;
+            --color-text: #333333;
+            --color-background: #f8f9fa;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--color-background);
+            min-height: 100vh;
+            padding: 0;
+            margin: 0;
+        }
+
+        /* Carrusel de imágenes */
+        .carousel-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 1.5rem auto;
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .carousel {
+            display: flex;
+            transition: transform 0.6s ease;
+        }
+
+        .carousel-item {
+            min-width: 100%;
+            position: relative;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .student-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .student-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 0.3rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        .student-info p {
+            font-size: 1.1rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+        }
+
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 1rem;
+        }
+
+        .carousel-nav button {
+            background: rgba(255, 255, 255, 0.7);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+        }
+
+        .carousel-nav button:hover {
+            background: rgba(255, 255, 255, 0.95);
+            transform: scale(1.1);
+        }
+
+        /* Notificaciones */
+        .notification-icon {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: white;
+            z-index: 10;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--color-danger);
+            color: white;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 0 0 2px white;
+        }
+
+        /* Contenido Principal */
+        .content {
+            padding: 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: var(--color-secondary);
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            border-bottom: 2px solid var(--color-accent);
+            padding-bottom: 0.5rem;
+        }
+
+        .card p {
+            color: var(--color-text);
+            margin-bottom: 0.7rem;
+            line-height: 1.5;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .status.green {
+            background-color: #d4edda;
+            color: var(--color-success);
+        }
+
+        .status.red {
+            background-color: #f8d7da;
+            color: var(--color-danger);
+        }
+
+        .deadline {
+            font-size: 0.95rem;
+            color: var(--color-warning);
+            margin-top: 0.5rem;
+            font-weight: 600;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.2rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #f1f3f5;
+            color: var(--color-text);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        /* Lista de tareas y exámenes */
+        .task-list {
+            list-style: none;
+        }
+
+        .task-list li {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eeeeee;
+        }
+
+        .task-list li:last-child {
+            border-bottom: none;
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-info h3 {
+            font-size: 1.1rem;
+            color: var(--color-text);
+            margin-bottom: 0.3rem;
+        }
+
+        /* Media Queries para escritorio */
+        @media (min-width: 768px) {
+            .carousel-item img {
+                height: 450px;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 2rem;
+            }
+
+            .card {
+                padding: 2rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .carousel-item img {
+                height: 500px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Carrusel de imágenes -->
+    <div class="carousel-container">
+        <div class="carousel">
+            <div class="carousel-item">
+                <img src="1.jpeg" alt="Foto de Juan Pérez">
+                <div class="student-info">
+                    <h3>Juan Pérez Gómez</h3>
+                    <p>10° Grado - Grupo B</p>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="2.jpeg" alt="Foto de María Gómez">
+                <div class="student-info">
+                    <h3>María Gómez Rodríguez</h3>
+                    <p>11° Grado - Grupo A</p>
+                </div>
+            </div>
+        </div>
+        <div class="carousel-nav">
+            <button class="carousel-prev"><i class="fas fa-chevron-left"></i></button>
+            <button class="carousel-next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="notification-icon">
+            <i class="fas fa-bell"></i>
+            <span class="notification-badge">3</span>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <main class="content">
+        <!-- Sección 1: Clase Actual -->
+        <div class="dashboard-cards">
+            <div class="card">
+                <h2>Clase Actual</h2>
+                <p><strong>Materia:</strong> Matemáticas Avanzadas</p>
+                <p><strong>Hora:</strong> 10:00 AM - 11:30 AM</p>
+                <p><strong>Aula/Link Virtual:</strong> <a href="#" style="color: var(--color-primary); text-decoration: underline;">Zoom - Sala 123</a></p>
+                <p><strong>Profesor:</strong> Ana López Martínez</p>
+                <span class="status green">En curso</span>
+                <div class="actions">
+                    <button class="btn btn-primary">Unirse ahora</button>
+                    <button class="btn btn-secondary">Ver detalles</button>
+                </div>
+            </div>
+
+            <!-- Sección 2: Tareas Pendientes -->
+            <div class="card">
+                <h2>Tareas Pendientes</h2>
+                <ul class="task-list">
+                    <li>
+                        <div class="task-info">
+                            <h3>Matemáticas - Ejercicios de Álgebra Lineal</h3>
+                            <p class="deadline">Vence hoy a las 23:59</p>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-primary">Subir tarea</button>
+                            <button class="btn btn-secondary">Ver enunciado</button>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="task-info">
+                            <h3>Ciencias - Informe de Laboratorio de Química</h3>
+                            <p class="deadline">Vence en 2 días</p>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-primary">Subir tarea</button>
+                            <button class="btn btn-secondary">Ver enunciado</button>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="task-info">
+                            <h3>Historia - Ensayo sobre la Revolución Industrial</h3>
+                            <p class="deadline">Vence en 5 días</p>
+                        </div>
+                        <div class="actions">
+                            <button class="btn btn-primary">Subir tarea</button>
+                            <button class="btn btn-secondary">Ver enunciado</button>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sección 3: Próximos Exámenes -->
+            <div class="card">
+                <h2>Próximos Exámenes</h2>
+                <ul class="task-list">
+                    <li>
+                        <div class="task-info">
+                            <h3>Historia - Examen Parcial</h3>
+                            <p class="deadline">15 de diciembre, 9:00 AM</p>
+                        </div>
+                        <span class="status red">Pendiente</span>
+                    </li>
+                    <li>
+                        <div class="task-info">
+                            <h3>Inglés - Prueba Oral</h3>
+                            <p class="deadline">18 de diciembre, 2:00 PM</p>
+                        </div>
+                        <span class="status red">Pendiente</span>
+                    </li>
+                    <li>
+                        <div class="task-info">
+                            <h3>Matemáticas - Examen Final</h3>
+                            <p class="deadline">20 de diciembre, 10:00 AM</p>
+                        </div>
+                        <span class="status red">Pendiente</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.querySelector('.carousel');
+            const items = document.querySelectorAll('.carousel-item');
+            const prevBtn = document.querySelector('.carousel-prev');
+            const nextBtn = document.querySelector('.carousel-next');
+            let currentIndex = 0;
+
+            function updateCarousel() {
+                carousel.style.transform = `translateX(-${currentIndex * 100}%)`;
+            }
+
+            prevBtn.addEventListener('click', function() {
+                currentIndex = (currentIndex > 0) ? currentIndex - 1 : items.length - 1;
+                updateCarousel();
+            });
+
+            nextBtn.addEventListener('click', function() {
+                currentIndex = (currentIndex < items.length - 1) ? currentIndex + 1 : 0;
+                updateCarousel();
+            });
+
+            // Simulación de notificaciones
+            const notificationIcon = document.querySelector('.notification-icon');
+            notificationIcon.addEventListener('click', function() {
+                alert('Tienes 3 notificaciones nuevas:\n\n1. Recordatorio: Tarea de Matemáticas vence hoy.\n2. Nueva circular: Salida pedagógica.\n3. Calificación publicada: Ciencias.');
+            });
+
+            // Simulación de botones
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const action = this.textContent.trim();
+                    alert(`Redirigiendo a: ${action}`);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

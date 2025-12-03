@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Escolar - Navegación</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Barra de navegación para escritorio */
+        .desktop-nav {
+            display: none;
+            background-color: #2c3e50;
+            padding: 1rem;
+        }
+
+        .desktop-nav ul {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .desktop-nav a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+        }
+
+        .desktop-nav i {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Barra de navegación para móvil */
+        .mobile-nav {
+            display: flex;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background-color: #2c3e50;
+            padding: 0.5rem 0;
+            z-index: 1000;
+        }
+
+        .mobile-nav ul {
+            display: flex;
+            justify-content: space-around;
+            list-style: none;
+            width: 100%;
+        }
+
+        .mobile-nav a {
+            color: white;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+        }
+
+        .mobile-nav i {
+            font-size: 1.5rem;
+        }
+
+        .mobile-nav span {
+            font-size: 0.7rem;
+        }
+
+        /* Contenido principal */
+        .content {
+            flex: 1;
+            padding: 2rem;
+            text-align: center;
+            background-color: #f5f5f5;
+            margin-bottom: 60px; /* Espacio para la barra móvil */
+        }
+
+        /* Estilo para la opción activa */
+        nav a.active {
+            background-color: #3498db;
+            border-radius: 5px;
+        }
+
+        /* Media Queries para escritorio */
+        @media (min-width: 768px) {
+            .desktop-nav {
+                display: block;
+            }
+
+            .mobile-nav {
+                display: none;
+            }
+
+            .content {
+                margin-bottom: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Barra de navegación para escritorio -->
+    <nav class="desktop-nav">
+        <ul>
+            <li><a href="#" class="active"><i class="fas fa-home"></i> Home</a></li>
+            <li><a href="#"><i class="fas fa-graduation-cap"></i> Académico</a></li>
+            <li><a href="#"><i class="fas fa-users"></i> Social</a></li>
+            <li><a href="#"><i class="fas fa-credit-card"></i> Pagos</a></li>
+            <li><a href="#"><i class="fas fa-user"></i> Perfil</a></li>
+        </ul>
+    </nav>
+
+    <!-- Barra de navegación para móvil -->
+    <nav class="mobile-nav">
+        <ul>
+            <li><a href="#" class="active"><i class="fas fa-home"></i><span>Home</span></a></li>
+            <li><a href="#"><i class="fas fa-graduation-cap"></i><span>Académico</span></a></li>
+            <li><a href="#"><i class="fas fa-users"></i><span>Social</span></a></li>
+            <li><a href="#"><i class="fas fa-credit-card"></i><span>Pagos</span></a></li>
+            <li><a href="#"><i class="fas fa-user"></i><span>Perfil</span></a></li>
+        </ul>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="content">
+        <h1>Bienvenido al Sistema Escolar</h1>
+        <p>Selecciona una opción del menú para continuar.</p>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navLinks = document.querySelectorAll('nav a');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Remover clase activa de todos los enlaces
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    // Añadir clase activa al enlace clickeado
+                    this.classList.add('active');
+                    // Aquí podrías cargar contenido dinámico según la opción
+                    console.log('Navegando a:', this.querySelector('span') ? this.querySelector('span').textContent : this.textContent.trim());
+                });
+            });
+        });
+    </script>
+</body>
+</html>

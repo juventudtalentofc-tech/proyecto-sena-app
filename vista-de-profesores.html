@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Escolar - Vista Profesor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3498db;
+            --primary-dark: #2980b9;
+            --secondary: #2c3e50;
+            --accent: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --success: #2ecc71;
+            --warning: #f39c12;
+            --danger: #e74c3c;
+            --shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-icon {
+            font-size: 1.5rem;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .profile-picture {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        .profile-name {
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 90px;
+            height: fit-content;
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            transform: translateX(5px);
+        }
+
+        .sidebar-item.active {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: var(--primary);
+        }
+
+        .sidebar-icon {
+            font-size: 1.2rem;
+            color: var(--primary);
+        }
+
+        .sidebar-text {
+            font-weight: 500;
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+        }
+
+        /* Dashboard Cards */
+        .dashboard-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to bottom, var(--primary), var(--primary-dark));
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .card-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-primary {
+            background-color: rgba(52, 152, 219, 0.2);
+            color: var(--primary);
+        }
+
+        .badge-danger {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--danger);
+        }
+
+        .badge-success {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success);
+        }
+
+        /* Class List */
+        .class-list {
+            list-style: none;
+        }
+
+        .class-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: var(--transition);
+        }
+
+        .class-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .class-info {
+            flex: 1;
+        }
+
+        .class-name {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.3rem;
+        }
+
+        .class-details {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .class-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tab.active {
+            color: var(--primary);
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--primary);
+        }
+
+        /* Student List */
+        .student-list {
+            list-style: none;
+        }
+
+        .student-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: var(--transition);
+        }
+
+        .student-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .student-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .student-details h4 {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 0.2rem;
+        }
+
+        .student-details p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 55px;
+            height: 28px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: var(--transition);
+            border-radius: 28px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: var(--transition);
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(27px);
+        }
+
+        /* Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 60px;
+            height: 60px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: static;
+                margin-bottom: 2rem;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem 1.5rem;
+            }
+
+            .header-title {
+                font-size: 1.5rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .profile-name {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-title">
+            <i class="fas fa-chalkboard-teacher"></i>
+            <span>Dashboard Profesor</span>
+        </div>
+        <div class="header-actions">
+            <div class="notification">
+                <i class="fas fa-bell notification-icon"></i>
+                <span class="notification-badge">4</span>
+            </div>
+            <div class="profile">
+                <img src="1.jpeg" alt="Foto de perfil" class="profile-picture">
+                <span class="profile-name">Prof. Carlos Ramírez</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3 class="sidebar-title">Menú Principal</h3>
+                <p class="sidebar-subtitle">Gestión académica</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active">
+                    <i class="fas fa-home sidebar-icon"></i>
+                    <span class="sidebar-text">Inicio</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-calendar-alt sidebar-icon"></i>
+                    <span class="sidebar-text">Agenda</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-clipboard-list sidebar-icon"></i>
+                    <span class="sidebar-text">Asistencia</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-graduation-cap sidebar-icon"></i>
+                    <span class="sidebar-text">Calificaciones</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-book sidebar-icon"></i>
+                    <span class="sidebar-text">Recursos</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-tasks sidebar-icon"></i>
+                    <span class="sidebar-text">Tareas</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-users sidebar-icon"></i>
+                    <span class="sidebar-text">Estudiantes</span>
+                </li>
+                <li class="sidebar-item">
+                    <i class="fas fa-cog sidebar-icon"></i>
+                    <span class="sidebar-text">Configuración</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Content Area -->
+        <main class="content-area">
+            <!-- Agenda del Día -->
+            <section class="dashboard-section">
+                <div class="section-title">
+                    <span>Agenda del Día</span>
+                    <span class="card-badge badge-primary">Hoy</span>
+                </div>
+                <div class="dashboard-cards">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Matemáticas 10°A</h3>
+                            <span class="card-badge badge-success">En curso</span>
+                        </div>
+                        <div class="class-details">
+                            <p><i class="fas fa-clock"></i> 8:00 AM - 9:30 AM</p>
+                            <p><i class="fas fa-map-marker-alt"></i> Aula 201</p>
+                            <p><i class="fas fa-user-tie"></i> Prof. Carlos Ramírez</p>
+                        </div>
+                        <div class="class-actions">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-check-circle"></i> Llamar Lista
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-info-circle"></i> Detalles
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Física 11°B</h3>
+                            <span class="card-badge badge-primary">Próxima</span>
+                        </div>
+                        <div class="class-details">
+                            <p><i class="fas fa-clock"></i> 10:00 AM - 11:30 AM</p>
+                            <p><i class="fas fa-map-marker-alt"></i> Aula 203</p>
+                            <p><i class="fas fa-user-tie"></i> Prof. Carlos Ramírez</p>
+                        </div>
+                        <div class="class-actions">
+                            <button class="btn btn-primary">
+                                <i class="fas fa-check-circle"></i> Llamar Lista
+                            </button>
+                            <button class="btn btn-outline">
+                                <i class="fas fa-info-circle"></i> Detalles
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tareas por Calificar -->
+            <section class="dashboard-section">
+                <div class="section-title">
+                    <span>Tareas por Calificar</span>
+                    <span class="card-badge badge-danger">15 pendientes</span>
+                </div>
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Biología 9°B</h3>
+                        <span class="card-badge badge-danger">Urgente</span>
+                    </div>
+                    <ul class="class-list">
+                        <li class="class-item">
+                            <div class="class-info">
+                                <h4 class="class-name">Informe de Laboratorio</h4>
+                                <p class="class-details">Fecha límite: 5 de diciembre</p>
+                            </div>
+                            <div class="class-actions">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-edit"></i> Calificar
+                                </button>
+                            </div>
+                        </li>
+                        <li class="class-item">
+                            <div class="class-info">
+                                <h4 class="class-name">Proyecto de Investigación</h4>
+                                <p class="class-details">Fecha límite: 8 de diciembre</p>
+                            </div>
+                            <div class="class-actions">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-edit"></i> Calificar
+                                </button>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Gestión de Clase -->
+            <section class="dashboard-section">
+                <div class="section-title">
+                    <span>Gestión de Clase</span>
+                </div>
+                <div class="card">
+                    <div class="tabs">
+                        <div class="tab active" data-tab="attendance">
+                            <i class="fas fa-user-check"></i> Asistencia
+                        </div>
+                        <div class="tab" data-tab="grades">
+                            <i class="fas fa-clipboard-list"></i> Calificaciones
+                        </div>
+                        <div class="tab" data-tab="resources">
+                            <i class="fas fa-book"></i> Recursos
+                        </div>
+                    </div>
+
+                    <div id="attendance" class="tab-content">
+                        <div class="card-header">
+                            <h3 class="card-title">Asistencia - Matemáticas 10°A</h3>
+                            <span class="card-badge badge-primary">30 estudiantes</span>
+                        </div>
+                        <ul class="student-list">
+                            <li class="student-item">
+                                <div class="student-info">
+                                    <img src="2.jpeg" alt="Foto de Juan Pérez" class="student-avatar">
+                                    <div class="student-details">
+                                        <h4>Juan Pérez Gómez</h4>
+                                        <p>ID: 2023001</p>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </li>
+                            <li class="student-item">
+                                <div class="student-info">
+                                    <img src="1.jpeg" alt="Foto de María López" class="student-avatar">
+                                    <div class="student-details">
+                                        <h4>María López Rodríguez</h4>
+                                        <p>ID: 2023002</p>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </li>
+                            <li class="student-item">
+                                <div class="student-info">
+                                    <img src="2.jpeg" alt="Foto de Carlos García" class="student-avatar">
+                                    <div class="student-details">
+                                        <h4>Carlos García Martínez</h4>
+                                        <p>ID: 2023003</p>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox">
+                                    <span class="slider"></span>
+                                </label>
+                            </li>
+                            <li class="student-item">
+                                <div class="student-info">
+                                    <img src="1.jpeg" alt="Foto de Ana Martínez" class="student-avatar">
+                                    <div class="student-details">
+                                        <h4>Ana Martínez Sánchez</h4>
+                                        <p>ID: 2023004</p>
+                                    </div>
+                                </div>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" checked>
+                                    <span class="slider"></span>
+                                </label>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="grades" class="tab-content" style="display: none;">
+                        <div class="card-header">
+                            <h3 class="card-title">Calificaciones - Matemáticas 10°A</h3>
+                        </div>
+                        <p>Contenido de calificaciones...</p>
+                    </div>
+
+                    <div id="resources" class="tab-content" style="display: none;">
+                        <div class="card-header">
+                            <h3 class="card-title">Recursos - Matemáticas 10°A</h3>
+                        </div>
+                        <p>Contenido de recursos...</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Floating Action Button -->
+    <button class="fab" id="saveAttendance">
+        <i class="fas fa-save"></i>
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tab functionality
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const targetTab = this.getAttribute('data-tab');
+
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove('active'));
+
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+
+                    // Hide all tab contents
+                    tabContents.forEach(content => {
+                        content.style.display = 'none';
+                    });
+
+                    // Show target tab content
+                    document.getElementById(targetTab).style.display = 'block';
+                });
+            });
+
+            // Notification icon
+            const notificationIcon = document.querySelector('.notification');
+            notificationIcon.addEventListener('click', function() {
+                alert('Notificaciones:\n\n1. Tienes 15 tareas por calificar\n2. Reunión de profesores mañana\n3. Nuevo mensaje de padre de familia\n4. Recordatorio: Entrega de informes');
+            });
+
+            // Save attendance button
+            const saveAttendanceBtn = document.getElementById('saveAttendance');
+            saveAttendanceBtn.addEventListener('click', function() {
+                alert('Asistencia guardada correctamente para Matemáticas 10°A');
+            });
+
+            // Class action buttons
+            const actionButtons = document.querySelectorAll('.btn-primary');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const action = this.textContent.trim();
+                    const className = this.closest('.card').querySelector('.card-title').textContent;
+                    alert(`${action} para ${className}`);
+                });
+            });
+
+            // Sidebar items
+            const sidebarItems = document.querySelectorAll('.sidebar-item');
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all items
+                    sidebarItems.forEach(i => i.classList.remove('active'));
+
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

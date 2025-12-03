@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vista Padre de Familia - Sistema Escolar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --primary-light: #4895ef;
+            --secondary-color: #3f37c9;
+            --accent-color: #4cc9f0;
+            --success-color: #4bb543;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid white;
+        }
+
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            padding: 2rem;
+            gap: 2rem;
+        }
+
+        /* Child Selector Carousel */
+        .child-selector {
+            width: 100%;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .child-selector-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .child-selector-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .child-carousel {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            overflow-x: auto;
+            padding: 1rem 0;
+            scroll-behavior: smooth;
+        }
+
+        .child-card {
+            min-width: 120px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 1rem;
+            border-radius: var(--border-radius);
+        }
+
+        .child-card:hover {
+            transform: translateY(-5px);
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        .child-card.active {
+            background-color: rgba(67, 97, 238, 0.2);
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .child-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid white;
+            box-shadow: var(--shadow);
+            margin-bottom: 0.5rem;
+        }
+
+        .child-name {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .child-grade {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .carousel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .carousel-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .carousel-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Content Area */
+        .content-area {
+            flex: 1;
+        }
+
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .card-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background-color: rgba(75, 181, 67, 0.2);
+            color: var(--success-color);
+        }
+
+        .badge-warning {
+            background-color: rgba(243, 156, 18, 0.2);
+            color: var(--warning-color);
+        }
+
+        .badge-danger {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--danger-color);
+        }
+
+        .badge-primary {
+            background-color: rgba(67, 97, 238, 0.2);
+            color: var(--primary-color);
+        }
+
+        /* Attendance Chart */
+        .attendance-chart {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+
+        .chart-item {
+            text-align: center;
+        }
+
+        .chart-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .chart-label {
+            font-size: 0.9rem;
+            color: var(--gray-color);
+        }
+
+        .chart-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        /* Notifications */
+        .notification-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            background-color: white;
+            margin-bottom: 0.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .notification-item:hover {
+            transform: translateX(5px);
+        }
+
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .notification-content h4 {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.3rem;
+        }
+
+        .notification-content p {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .notification-time {
+            color: var(--gray-color);
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+
+        /* Payment Section */
+        .payment-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .payment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .payment-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .payment-status {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .payment-history {
+            margin-top: 1.5rem;
+        }
+
+        .payment-history-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+        }
+
+        .payment-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .payment-item:last-child {
+            border-bottom: none;
+        }
+
+        .payment-info h4 {
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.2rem;
+        }
+
+        .payment-info p {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .payment-amount {
+            font-weight: 600;
+            color: var(--success-color);
+        }
+
+        .payment-amount.pending {
+            color: var(--danger-color);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background-color: rgba(67, 97, 238, 0.1);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+                padding: 1rem;
+            }
+
+            .child-carousel {
+                gap: 1rem;
+            }
+
+            .child-card {
+                min-width: 100px;
+            }
+
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .header {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-title">
+            <i class="fas fa-user-friends"></i>
+            <span>Portal Familiar</span>
+        </div>
+        <div class="header-actions">
+            <div class="notification">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">4</span>
+            </div>
+            <div class="profile">
+                <img src="1.jpeg" alt="Foto de perfil" class="profile-picture">
+                <span>Juan Pérez (Padre)</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Child Selector -->
+        <div class="child-selector">
+            <div class="child-selector-header">
+                <h3 class="child-selector-title">Selecciona un hijo</h3>
+                <p>Monitorea el progreso académico de tus hijos</p>
+            </div>
+            <div class="child-carousel" id="childCarousel">
+                <div class="child-card active" data-child="0">
+                    <img src="1.jpeg" alt="Foto de María" class="child-avatar">
+                    <div class="child-name">María Pérez</div>
+                    <div class="child-grade">10° Grado - Grupo A</div>
+                </div>
+                <div class="child-card" data-child="1">
+                    <img src="2.jpeg" alt="Foto de Carlos" class="child-avatar">
+                    <div class="child-name">Carlos Pérez</div>
+                    <div class="child-grade">7° Grado - Grupo B</div>
+                </div>
+                <div class="child-card" data-child="2">
+                    <img src="1.jpeg" alt="Foto de Sofía" class="child-avatar">
+                    <div class="child-name">Sofía Pérez</div>
+                    <div class="child-grade">5° Grado - Grupo C</div>
+                </div>
+            </div>
+            <div class="carousel-nav">
+                <button class="carousel-btn" onclick="scrollCarousel('left')">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn" onclick="scrollCarousel('right')">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Dashboard Cards -->
+            <div class="dashboard-cards">
+                <!-- Attendance Summary -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Resumen de Asistencia</h3>
+                        <span class="card-badge badge-success">Este mes</span>
+                    </div>
+                    <div class="attendance-chart">
+                        <div class="chart-item">
+                            <div class="chart-icon" style="background-color: var(--success-color);">
+                                <i class="fas fa-check-circle"></i>
+                            </div>
+                            <div class="chart-label">Asistencias</div>
+                            <div class="chart-value">18 días</div>
+                        </div>
+                        <div class="chart-item">
+                            <div class="chart-icon" style="background-color: var(--warning-color);">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                            <div class="chart-label">Tardanzas</div>
+                            <div class="chart-value">2 días</div>
+                        </div>
+                        <div class="chart-item">
+                            <div class="chart-icon" style="background-color: var(--danger-color);">
+                                <i class="fas fa-times-circle"></i>
+                            </div>
+                            <div class="chart-label">Ausencias</div>
+                            <div class="chart-value">1 día</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 1rem;">
+                        <div style="width: 100%; height: 8px; background-color: #eee; border-radius: 4px; overflow: hidden;">
+                            <div style="width: 90%; height: 100%; background-color: var(--success-color);"></div>
+                        </div>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: var(--gray-color);">
+                            <strong>90% de asistencia</strong> - Todo en orden
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Behavior Summary -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Comportamiento</h3>
+                        <span class="card-badge badge-success">Excelente</span>
+                    </div>
+                    <div style="text-align: center; margin: 1rem 0;">
+                        <div style="width: 100px; height: 100px; margin: 0 auto; border-radius: 50%; background-color: var(--success-color); display: flex; justify-content: center; align-items: center; color: white; font-size: 2rem; font-weight: bold;">
+                            A
+                        </div>
+                        <p style="margin-top: 1rem; font-size: 1.1rem; font-weight: 600;">Comportamiento Excelente</p>
+                        <p style="color: var(--gray-color);">Tu hijo ha demostrado un comportamiento ejemplar este periodo.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Notifications -->
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Notificaciones Urgentes</h3>
+                    <span class="card-badge badge-danger">4 nuevas</span>
+                </div>
+                <div class="notifications-list">
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-file-alt"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h4>Circular: Salida pedagógica</h4>
+                            <p>Salida al museo de ciencias este viernes 8 de diciembre.</p>
+                        </div>
+                        <div class="notification-time">Hoy 8:30 AM</div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-calendar-alt"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h4>Reunión de padres</h4>
+                            <p>Reunión general el próximo lunes 11 de diciembre a las 7:00 PM.</p>
+                        </div>
+                        <div class="notification-time">Ayer</div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h4>Tarea pendiente</h4>
+                            <p>Tu hijo tiene una tarea pendiente de matemáticas.</p>
+                        </div>
+                        <div class="notification-time">2 días atrás</div>
+                    </div>
+                    <div class="notification-item">
+                        <div class="notification-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="notification-content">
+                            <h4>Recordatorio de pago</h4>
+                            <p>El pago de la mensualidad vence en 3 días.</p>
+                        </div>
+                        <div class="notification-time">3 días atrás</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Section -->
+            <div class="payment-section">
+                <div class="payment-header">
+                    <h3 class="payment-title">Estado de Cuenta</h3>
+                    <span class="payment-status badge-danger">Pendiente</span>
+                </div>
+                <div class="payment-summary">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div>
+                            <p style="color: var(--gray-color); margin-bottom: 0.3rem;">Saldo actual</p>
+                            <p style="font-size: 1.8rem; font-weight: bold; color: var(--danger-color);">$450.000</p>
+                        </div>
+                        <div>
+                            <p style="color: var(--gray-color); margin-bottom: 0.3rem;">Próximo pago</p>
+                            <p style="font-size: 1.2rem; font-weight: bold;">15 de diciembre</p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;">
+                        <i class="fas fa-credit-card"></i> PAGAR AHORA
+                    </button>
+                    <button class="btn btn-outline" style="width: 100%;">
+                        <i class="fas fa-download"></i> DESCARGAR CERTIFICADO
+                    </button>
+                </div>
+
+                <div class="payment-history">
+                    <h3 class="payment-history-title">Historial de Pagos</h3>
+                    <div class="payment-item">
+                        <div class="payment-info">
+                            <h4>Noviembre 2023</h4>
+                            <p>Mensualidad</p>
+                        </div>
+                        <div class="payment-amount">$450.000</div>
+                    </div>
+                    <div class="payment-item">
+                        <div class="payment-info">
+                            <h4>Octubre 2023</h4>
+                            <p>Mensualidad</p>
+                        </div>
+                        <div class="payment-amount">$450.000</div>
+                    </div>
+                    <div class="payment-item">
+                        <div class="payment-info">
+                            <h4>Septiembre 2023</h4>
+                            <p>Mensualidad</p>
+                        </div>
+                        <div class="payment-amount">$450.000</div>
+                    </div>
+                    <div class="payment-item">
+                        <div class="payment-info">
+                            <h4>Agosto 2023</h4>
+                            <p>Matrícula</p>
+                        </div>
+                        <div class="payment-amount">$1.200.000</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sample data for children
+        const childrenData = [
+            {
+                name: "María Pérez",
+                grade: "10° Grado - Grupo A",
+                avatar: "1.jpeg",
+                attendance: {
+                    present: 18,
+                    late: 2,
+                    absent: 1
+                },
+                behavior: "Excelente",
+                notifications: [
+                    { title: "Circular: Salida pedagógica", message: "Salida al museo de ciencias este viernes 8 de diciembre.", time: "Hoy 8:30 AM", icon: "file-alt" },
+                    { title: "Reunión de padres", message: "Reunión general el próximo lunes 11 de diciembre a las 7:00 PM.", time: "Ayer", icon: "calendar-alt" }
+                ],
+                payments: {
+                    currentBalance: 450000,
+                    nextPayment: "15 de diciembre",
+                    history: [
+                        { month: "Noviembre 2023", concept: "Mensualidad", amount: 450000 },
+                        { month: "Octubre 2023", concept: "Mensualidad", amount: 450000 },
+                        { month: "Septiembre 2023", concept: "Mensualidad", amount: 450000 },
+                        { month: "Agosto 2023", concept: "Matrícula", amount: 1200000 }
+                    ]
+                }
+            },
+            {
+                name: "Carlos Pérez",
+                grade: "7° Grado - Grupo B",
+                avatar: "2.jpeg",
+                attendance: {
+                    present: 17,
+                    late: 3,
+                    absent: 2
+                },
+                behavior: "Bueno",
+                notifications: [
+                    { title: "Tarea pendiente", message: "Tu hijo tiene una tarea pendiente de ciencias.", time: "Hoy 10:00 AM", icon: "exclamation-triangle" },
+                    { title: "Recordatorio de pago", message: "El pago de la mensualidad vence en 3 días.", time: "2 días atrás", icon: "bell" }
+                ],
+                payments: {
+                    currentBalance: 0,
+                    nextPayment: "15 de enero",
+                    history: [
+                        { month: "Noviembre 2023", concept: "Mensualidad", amount: 400000 },
+                        { month: "Octubre 2023", concept: "Mensualidad", amount: 400000 }
+                    ]
+                }
+            },
+            {
+                name: "Sofía Pérez",
+                grade: "5° Grado - Grupo C",
+                avatar: "1.jpeg",
+                attendance: {
+                    present: 20,
+                    late: 0,
+                    absent: 0
+                },
+                behavior: "Excelente",
+                notifications: [
+                    { title: "Felicitaciones", message: "Sofía ha sido destacada como estudiante del mes.", time: "3 días atrás", icon: "award" },
+                    { title: "Actividad especial", message: "Participa en el concurso de matemáticas.", time: "1 semana atrás", icon: "trophy" }
+                ],
+                payments: {
+                    currentBalance: 0,
+                    nextPayment: "15 de enero",
+                    history: [
+                        { month: "Noviembre 2023", concept: "Mensualidad", amount: 350000 },
+                        { month: "Octubre 2023", concept: "Mensualidad", amount: 350000 }
+                    ]
+                }
+            }
+        ];
+
+        // Current selected child
+        let currentChild = 0;
+
+        // DOM Elements
+        const childCards = document.querySelectorAll('.child-card');
+        const childCarousel = document.getElementById('childCarousel');
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up child selector
+            childCards.forEach((card, index) => {
+                card.addEventListener('click', function() {
+                    // Remove active class from all cards
+                    childCards.forEach(c => c.classList.remove('active'));
+
+                    // Add active class to clicked card
+                    this.classList.add('active');
+
+                    // Update current child
+                    currentChild = index;
+
+                    // Load child data
+                    loadChildData();
+                });
+            });
+
+            // Load initial child data
+            loadChildData();
+
+            // Set up notification
+            document.querySelector('.notification').addEventListener('click', function() {
+                alert('Notificaciones:\n\n1. Circular: Salida pedagógica\n2. Reunión de padres\n3. Tarea pendiente de matemáticas\n4. Recordatorio de pago');
+            });
+        });
+
+        // Load child data
+        function loadChildData() {
+            const child = childrenData[currentChild];
+
+            // Update attendance chart
+            document.querySelectorAll('.chart-item')[0].querySelector('.chart-value').textContent = `${child.attendance.present} días`;
+            document.querySelectorAll('.chart-item')[1].querySelector('.chart-value').textContent = `${child.attendance.late} días`;
+            document.querySelectorAll('.chart-item')[2].querySelector('.chart-value').textContent = `${child.attendance.absent} día`;
+
+            const totalDays = child.attendance.present + child.attendance.late + child.attendance.absent;
+            const attendancePercentage = Math.round((child.attendance.present / totalDays) * 100);
+            document.querySelector('.attendance-chart + div div').style.width = `${attendancePercentage}%`;
+            document.querySelector('.attendance-chart + div p').innerHTML = `<strong>${attendancePercentage}% de asistencia</strong> - ${getAttendanceStatus(attendancePercentage)}`;
+
+            // Update behavior
+            document.querySelectorAll('.card')[1].querySelector('.card-badge').textContent = child.behavior;
+            document.querySelectorAll('.card')[1].querySelector('.card-badge').className = `card-badge badge-${getBehaviorBadge(child.behavior)}`;
+
+            const behaviorIcon = document.querySelector('.card:nth-child(2) div div div');
+            behaviorIcon.textContent = getBehaviorIcon(child.behavior);
+            behaviorIcon.style.backgroundColor = getBehaviorColor(child.behavior);
+
+            document.querySelector('.card:nth-child(2) p:nth-of-type(2)').textContent = getBehaviorMessage(child.behavior);
+
+            // Update notifications
+            const notificationsList = document.querySelector('.notifications-list');
+            notificationsList.innerHTML = '';
+
+            child.notifications.forEach(notification => {
+                const notificationItem = document.createElement('div');
+                notificationItem.className = 'notification-item';
+                notificationItem.innerHTML = `
+                    <div class="notification-icon">
+                        <i class="fas fa-${notification.icon}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <h4>${notification.title}</h4>
+                        <p>${notification.message}</p>
+                    </div>
+                    <div class="notification-time">${notification.time}</div>
+                `;
+                notificationsList.appendChild(notificationItem);
+            });
+
+            // Update payment section
+            const paymentStatus = document.querySelector('.payment-status');
+            const currentBalance = document.querySelector('.payment-summary p:nth-child(2)');
+            const nextPayment = document.querySelector('.payment-summary p:nth-child(4)');
+
+            if (child.payments.currentBalance > 0) {
+                paymentStatus.textContent = 'Pendiente';
+                paymentStatus.className = 'payment-status badge-danger';
+                currentBalance.textContent = `$${formatNumber(child.payments.currentBalance)}`;
+                currentBalance.style.color = 'var(--danger-color)';
+            } else {
+                paymentStatus.textContent = 'Al día';
+                paymentStatus.className = 'payment-status badge-success';
+                currentBalance.textContent = '$0';
+                currentBalance.style.color = 'var(--success-color)';
+            }
+
+            nextPayment.textContent = child.payments.nextPayment;
+
+            // Update payment history
+            const paymentHistory = document.querySelector('.payment-history');
+            const paymentItems = paymentHistory.querySelectorAll('.payment-item');
+            paymentItems.forEach((item, index) => {
+                if (index < child.payments.history.length) {
+                    const payment = child.payments.history[index];
+                    item.querySelector('.payment-info h4').textContent = payment.month;
+                    item.querySelector('.payment-info p').textContent = payment.concept;
+                    item.querySelector('.payment-amount').textContent = `$${formatNumber(payment.amount)}`;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            // Show hidden payment items if needed
+            for (let i = paymentItems.length; i < child.payments.history.length; i++) {
+                const payment = child.payments.history[i];
+                const paymentItem = document.createElement('div');
+                paymentItem.className = 'payment-item';
+                paymentItem.innerHTML = `
+                    <div class="payment-info">
+                        <h4>${payment.month}</h4>
+                        <p>${payment.concept}</p>
+                    </div>
+                    <div class="payment-amount">$${formatNumber(payment.amount)}</div>
+                `;
+                paymentHistory.appendChild(paymentItem);
+            }
+        }
+
+        // Helper functions
+        function getAttendanceStatus(percentage) {
+            if (percentage >= 90) return "Todo en orden";
+            if (percentage >= 80) return "Atención requerida";
+            return "Necesita mejorar";
+        }
+
+        function getBehaviorBadge(behavior) {
+            switch(behavior.toLowerCase()) {
+                case 'excelente': return 'success';
+                case 'bueno': return 'primary';
+                case 'regular': return 'warning';
+                default: return 'danger';
+            }
+        }
+
+        function getBehaviorIcon(behavior) {
+            switch(behavior.toLowerCase()) {
+                case 'excelente': return 'A';
+                case 'bueno': return 'B';
+                default: return 'C';
+            }
+        }
+
+        function getBehaviorColor(behavior) {
+            switch(behavior.toLowerCase()) {
+                case 'excelente': return 'var(--success-color)';
+                case 'bueno': return 'var(--primary-color)';
+                case 'regular': return 'var(--warning-color)';
+                default: return 'var(--danger-color)';
+            }
+        }
+
+        function getBehaviorMessage(behavior) {
+            switch(behavior.toLowerCase()) {
+                case 'excelente': return "Tu hijo ha demostrado un comportamiento ejemplar este periodo.";
+                case 'bueno': return "Tu hijo ha tenido un buen comportamiento, con algunos aspectos a mejorar.";
+                default: return "Es importante trabajar en mejorar el comportamiento de tu hijo.";
+            }
+        }
+
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function scrollCarousel(direction) {
+            const scrollAmount = 200;
+            if (direction === 'left') {
+                childCarousel.scrollLeft -= scrollAmount;
+            } else {
+                childCarousel.scrollLeft += scrollAmount;
+            }
+        }
+    </script>
+</body>
+</html>

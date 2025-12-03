@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrativo - Sistema Escolar</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --primary-light: #3498db;
+            --secondary-color: #e74c3c;
+            --accent-color: #4fc3f7;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #f8f9fa;
+            --dark-color: #2c3e50;
+            --gray-color: #6c757d;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 8px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark-color);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background-color: white;
+            color: var(--dark-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .notification {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .profile-picture {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            border-radius: 0;
+            padding: 1.5rem 0;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 70px;
+            height: calc(100vh - 70px);
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-subtitle {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1rem 0;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 1.5rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sidebar-item:hover {
+            background-color: rgba(44, 62, 80, 0.05);
+        }
+
+        .sidebar-item.active {
+            background-color: rgba(44, 62, 80, 0.1);
+            color: var(--primary-color);
+            border-left: 3px solid var(--primary-color);
+        }
+
+        .sidebar-icon {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .sidebar-text {
+            font-weight: 500;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+        }
+
+        /* Content Header */
+        .content-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .content-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .content-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        /* KPI Cards */
+        .kpi-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .kpi-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .kpi-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .kpi-icon.primary {
+            background-color: var(--primary-color);
+        }
+
+        .kpi-icon.secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .kpi-icon.success {
+            background-color: var(--success-color);
+        }
+
+        .kpi-icon.warning {
+            background-color: var(--warning-color);
+        }
+
+        .kpi-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .kpi-label {
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .kpi-change {
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        .kpi-change.positive {
+            color: var(--success-color);
+        }
+
+        .kpi-change.negative {
+            color: var(--danger-color);
+        }
+
+        /* Charts Section */
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .chart-selector {
+            padding: 0.5rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            background-color: white;
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Management Table */
+        .management-table {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 2rem;
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .table-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            padding: 0.5rem 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .search-input {
+            border: none;
+            outline: none;
+            width: 100%;
+            margin-left: 0.5rem;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .data-table tr:hover {
+            background-color: rgba(44, 62, 80, 0.05);
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .status-active {
+            background-color: rgba(46, 204, 113, 0.2);
+            color: var(--success-color);
+        }
+
+        .status-inactive {
+            background-color: rgba(231, 76, 60, 0.2);
+            color: var(--danger-color);
+        }
+
+        .status-pending {
+            background-color: rgba(243, 156, 18, 0.2);
+            color: var(--warning-color);
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .action-btn {
+            padding: 6px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .action-edit {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .action-block {
+            background-color: var(--warning-color);
+            color: white;
+        }
+
+        .action-reset {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            width: 500px;
+            max-width: 90%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+
+        .modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark-color);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            background-color: white;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 200px;
+            }
+
+            .kpi-cards {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-radius: var(--border-radius);
+                margin: 1rem;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .kpi-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-title">
+            <i class="fas fa-university"></i>
+            <span>Panel Administrativo</span>
+        </div>
+        <div class="header-actions">
+            <div class="notification">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge">8</span>
+            </div>
+            <div class="profile">
+                <img src="1.jpeg" alt="Foto de perfil" class="profile-picture">
+                <span>Admin. Laura Gómez</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div style="display: flex; flex: 1;">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h3 class="sidebar-title">Menú Principal</h3>
+                <p class="sidebar-subtitle">Gestión institucional</p>
+            </div>
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active" data-view="dashboard">
+                    <i class="fas fa-tachometer-alt sidebar-icon"></i>
+                    <span class="sidebar-text">Dashboard</span>
+                </li>
+                <li class="sidebar-item" data-view="students">
+                    <i class="fas fa-user-graduate sidebar-icon"></i>
+                    <span class="sidebar-text">Estudiantes</span>
+                </li>
+                <li class="sidebar-item" data-view="teachers">
+                    <i class="fas fa-chalkboard-teacher sidebar-icon"></i>
+                    <span class="sidebar-text">Profesores</span>
+                </li>
+                <li class="sidebar-item" data-view="billing">
+                    <i class="fas fa-file-invoice-dollar sidebar-icon"></i>
+                    <span class="sidebar-text">Facturación</span>
+                </li>
+                <li class="sidebar-item" data-view="reports">
+                    <i class="fas fa-chart-bar sidebar-icon"></i>
+                    <span class="sidebar-text">Reportes</span>
+                </li>
+                <li class="sidebar-item" data-view="settings">
+                    <i class="fas fa-cog sidebar-icon"></i>
+                    <span class="sidebar-text">Configuración</span>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard View -->
+            <div id="dashboardView" class="view active">
+                <div class="content-header">
+                    <h2 class="content-title">Dashboard Administrativo</h2>
+                    <div class="content-actions">
+                        <select class="chart-selector">
+                            <option>Este año</option>
+                            <option>2023</option>
+                            <option>2022</option>
+                        </select>
+                        <button class="btn" style="background-color: var(--primary-color); color: white;">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Cards -->
+                <div class="kpi-cards">
+                    <div class="kpi-card">
+                        <div class="kpi-icon primary">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="kpi-value">1,245</div>
+                        <div class="kpi-label">Estudiantes Activos</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 5% desde el mes pasado
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon secondary">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="kpi-value">87</div>
+                        <div class="kpi-label">Profesores</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 2 nuevos
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon success">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="kpi-value">$128,450,000</div>
+                        <div class="kpi-label">Recaudo del Mes</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 8% vs mes anterior
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon warning">
+                            <i class="fas fa-user-times"></i>
+                        </div>
+                        <div class="kpi-value">42</div>
+                        <div class="kpi-label">Ausentismo Hoy</div>
+                        <div class="kpi-change negative">
+                            <i class="fas fa-arrow-down"></i> 3% más que ayer
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Rendimiento Académico por Grado</h3>
+                            <select class="chart-selector">
+                                <option>2023</option>
+                                <option>2022</option>
+                                <option>2021</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Ingresos Mensuales</h3>
+                            <select class="chart-selector">
+                                <option>2023</option>
+                                <option>2022</option>
+                                <option>2021</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="revenueChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Management Table -->
+                <div class="management-table">
+                    <div class="table-header">
+                        <h3 class="table-title">Gestión de Usuarios</h3>
+                        <div class="table-actions">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="search-input" placeholder="Buscar usuarios...">
+                            </div>
+                            <button class="btn" style="background-color: var(--primary-color); color: white;" onclick="openModal('add')">
+                                <i class="fas fa-plus"></i> Nuevo Usuario
+                            </button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Rol</th>
+                                <th>Estado</th>
+                                <th>Último Acceso</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#1001</td>
+                                <td>Laura Gómez</td>
+                                <td>Administrador</td>
+                                <td><span class="status-badge status-active">Activo</span></td>
+                                <td>Hoy 8:30 AM</td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit', 1001)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-block">
+                                        <i class="fas fa-ban"></i> Bloquear
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#2001</td>
+                                <td>Carlos Ramírez</td>
+                                <td>Profesor</td>
+                                <td><span class="status-badge status-active">Activo</span></td>
+                                <td>Ayer 3:45 PM</td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit', 2001)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-block">
+                                        <i class="fas fa-ban"></i> Bloquear
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#3001</td>
+                                <td>María López</td>
+                                <td>Estudiante</td>
+                                <td><span class="status-badge status-active">Activo</span></td>
+                                <td>Hoy 7:15 AM</td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit', 3001)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-key"></i> Resetear
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#2002</td>
+                                <td>Ana Martínez</td>
+                                <td>Profesor</td>
+                                <td><span class="status-badge status-inactive">Inactivo</span></td>
+                                <td>15/11/2023</td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit', 2002)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-block">
+                                        <i class="fas fa-check"></i> Activar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#3002</td>
+                                <td>Juan Pérez</td>
+                                <td>Estudiante</td>
+                                <td><span class="status-badge status-pending">Pendiente</span></td>
+                                <td>Nunca</td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit', 3002)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-key"></i> Resetear
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Students View -->
+            <div id="studentsView" class="view">
+                <div class="content-header">
+                    <h2 class="content-title">Gestión de Estudiantes</h2>
+                    <div class="content-actions">
+                        <select class="chart-selector">
+                            <option>Todos</option>
+                            <option>Activos</option>
+                            <option>Inactivos</option>
+                            <option>Pendientes</option>
+                        </select>
+                        <button class="btn" style="background-color: var(--primary-color); color: white;" onclick="openModal('add-student')">
+                            <i class="fas fa-plus"></i> Nuevo Estudiante
+                        </button>
+                    </div>
+                </div>
+
+                <div class="management-table">
+                    <div class="table-header">
+                        <h3 class="table-title">Lista de Estudiantes</h3>
+                        <div class="table-actions">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="search-input" placeholder="Buscar estudiantes...">
+                            </div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Grado</th>
+                                <th>Promedio</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#3001</td>
+                                <td>María López</td>
+                                <td>10°A</td>
+                                <td>4.5</td>
+                                <td><span class="status-badge status-active">Activo</span></td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit-student', 3001)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-key"></i> Resetear
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#3002</td>
+                                <td>Juan Pérez</td>
+                                <td>9°B</td>
+                                <td>3.8</td>
+                                <td><span class="status-badge status-pending">Pendiente</span></td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit-student', 3002)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-key"></i> Resetear
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#3003</td>
+                                <td>Carlos Ramírez</td>
+                                <td>11°C</td>
+                                <td>4.2</td>
+                                <td><span class="status-badge status-active">Activo</span></td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit-student', 3003)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-key"></i> Resetear
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Teachers View -->
+            <div id="teachersView" class="view">
+                <div class="content-header">
+                    <h2 class="content-title">Gestión de Profesores</h2>
+                    <div class="content-actions">
+                        <select class="chart-selector">
+                            <option>Todos</option>
+                            <option>Activos</option>
+                            <option>Inactivos</option>
+                        </select>
+                        <button class="btn" style="background-color: var(--primary-color); color: white;" onclick="openModal('add-teacher')">
+                            <i class="fas fa-plus"></i> Nuevo Profesor
+                        </button>
+                    </div>
+                </div>
+
+                <div class="management-table">
+                    <div class="table-header">
+                        <h3 class="table-title">Lista de Profesores</h3>
+                        <div class="table-actions">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="search-input" placeholder="Buscar profesores...">
+                            </div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Asignatura</th>
+                                <th>Carga Horaria</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#2001</td>
+                                <td>Carlos Ramírez</td>
+                                <td>Matemáticas</td>
+                                <td>24 horas</td>
+                                <td><span class="status-badge status-active">Activo</span></td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit-teacher', 2001)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-block">
+                                        <i class="fas fa-ban"></i> Bloquear
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#2002</td>
+                                <td>Ana Martínez</td>
+                                <td>Biología</td>
+                                <td>20 horas</td>
+                                <td><span class="status-badge status-inactive">Inactivo</span></td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit-teacher', 2002)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-block">
+                                        <i class="fas fa-check"></i> Activar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#2003</td>
+                                <td>Luis Gómez</td>
+                                <td>Física</td>
+                                <td>22 horas</td>
+                                <td><span class="status-badge status-active">Activo</span></td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit" onclick="openModal('edit-teacher', 2003)">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-block">
+                                        <i class="fas fa-ban"></i> Bloquear
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Billing View -->
+            <div id="billingView" class="view">
+                <div class="content-header">
+                    <h2 class="content-title">Facturación</h2>
+                    <div class="content-actions">
+                        <select class="chart-selector">
+                            <option>Este año</option>
+                            <option>2023</option>
+                            <option>2022</option>
+                        </select>
+                        <button class="btn" style="background-color: var(--primary-color); color: white;">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="kpi-cards">
+                    <div class="kpi-card">
+                        <div class="kpi-icon success">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="kpi-value">$450,250,000</div>
+                        <div class="kpi-label">Ingresos Anuales</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 12% vs año anterior
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon primary">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="kpi-value">1,245</div>
+                        <div class="kpi-label">Facturas Emitidas</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 8% vs mes anterior
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="kpi-value">42</div>
+                        <div class="kpi-label">Facturas Pendientes</div>
+                        <div class="kpi-change negative">
+                            <i class="fas fa-arrow-down"></i> 5% más que el mes pasado
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon secondary">
+                            <i class="fas fa-credit-card"></i>
+                        </div>
+                        <div class="kpi-value">$38,450,000</div>
+                        <div class="kpi-label">Promedio Mensual</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 3% vs año anterior
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Ingresos por Mes</h3>
+                            <select class="chart-selector">
+                                <option>2023</option>
+                                <option>2022</option>
+                                <option>2021</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="billingChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Estado de Facturas</h3>
+                            <select class="chart-selector">
+                                <option>Este año</option>
+                                <option>2023</option>
+                                <option>2022</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="invoiceStatusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="management-table">
+                    <div class="table-header">
+                        <h3 class="table-title">Facturas Recientes</h3>
+                        <div class="table-actions">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="search-input" placeholder="Buscar facturas...">
+                            </div>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>N° Factura</th>
+                                <th>Estudiante</th>
+                                <th>Concepto</th>
+                                <th>Fecha</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#FAC-2023-1245</td>
+                                <td>María López</td>
+                                <td>Mensualidad Diciembre</td>
+                                <td>01/12/2023</td>
+                                <td>$450,000</td>
+                                <td><span class="status-badge status-pending">Pendiente</span></td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-paper-plane"></i> Enviar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#FAC-2023-1244</td>
+                                <td>Juan Pérez</td>
+                                <td>Mensualidad Noviembre</td>
+                                <td>01/11/2023</td>
+                                <td>$450,000</td>
+                                <td><span class="status-badge status-active">Pagado</span></td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#FAC-2023-1243</td>
+                                <td>Carlos Ramírez</td>
+                                <td>Matrícula 2024</td>
+                                <td>15/11/2023</td>
+                                <td>$1,200,000</td>
+                                <td><span class="status-badge status-active">Pagado</span></td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit">
+                                        <i class="fas fa-edit"></i> Editar
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-file-pdf"></i> PDF
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Reports View -->
+            <div id="reportsView" class="view">
+                <div class="content-header">
+                    <h2 class="content-title">Reportes</h2>
+                    <div class="content-actions">
+                        <select class="chart-selector">
+                            <option>Este año</option>
+                            <option>2023</option>
+                            <option>2022</option>
+                        </select>
+                        <button class="btn" style="background-color: var(--primary-color); color: white;">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="kpi-cards">
+                    <div class="kpi-card">
+                        <div class="kpi-icon primary">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="kpi-value">87%</div>
+                        <div class="kpi-label">Promedio Aprobación</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 2% vs año anterior
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon success">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="kpi-value">92%</div>
+                        <div class="kpi-label">Retención Estudiante</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 3% vs año anterior
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon warning">
+                            <i class="fas fa-user-times"></i>
+                        </div>
+                        <div class="kpi-value">8%</div>
+                        <div class="kpi-label">Deserción</div>
+                        <div class="kpi-change negative">
+                            <i class="fas fa-arrow-down"></i> 1% más que el año pasado
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon secondary">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="kpi-value">4.5</div>
+                        <div class="kpi-label">Satisfacción Padres</div>
+                        <div class="kpi-change positive">
+                            <i class="fas fa-arrow-up"></i> 0.2 vs año anterior
+                        </div>
+                    </div>
+                </div>
+
+                <div class="charts-section">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Rendimiento por Área</h3>
+                            <select class="chart-selector">
+                                <option>2023</option>
+                                <option>2022</option>
+                                <option>2021</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="performanceAreaChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Tendencia de Matrículas</h3>
+                            <select class="chart-selector">
+                                <option>Últimos 5 años</option>
+                                <option>Últimos 3 años</option>
+                                <option>Últimos 10 años</option>
+                            </select>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="enrollmentTrendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="management-table">
+                    <div class="table-header">
+                        <h3 class="table-title">Reportes Generados</h3>
+                        <div class="table-actions">
+                            <div class="search-box">
+                                <i class="fas fa-search"></i>
+                                <input type="text" class="search-input" placeholder="Buscar reportes...">
+                            </div>
+                            <button class="btn" style="background-color: var(--primary-color); color: white;" onclick="openModal('add-report')">
+                                <i class="fas fa-plus"></i> Nuevo Reporte
+                            </button>
+                        </div>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Tipo</th>
+                                <th>Fecha</th>
+                                <th>Generado por</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>#REP-2023-001</td>
+                                <td>Rendimiento Académico 2023</td>
+                                <td>PDF</td>
+                                <td>15/12/2023</td>
+                                <td>Laura Gómez</td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-download"></i> Descargar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#REP-2023-002</td>
+                                <td>Asistencia Mensual</td>
+                                <td>Excel</td>
+                                <td>01/12/2023</td>
+                                <td>Carlos Ramírez</td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-download"></i> Descargar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>#REP-2023-003</td>
+                                <td>Facturación Anual</td>
+                                <td>PDF</td>
+                                <td>30/11/2023</td>
+                                <td>Ana Martínez</td>
+                                <td class="table-actions">
+                                    <button class="action-btn action-edit">
+                                        <i class="fas fa-eye"></i> Ver
+                                    </button>
+                                    <button class="action-btn action-reset">
+                                        <i class="fas fa-download"></i> Descargar
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div id="settingsView" class="view">
+                <div class="content-header">
+                    <h2 class="content-title">Configuración</h2>
+                </div>
+
+                <div class="management-table">
+                    <div class="table-header">
+                        <h3 class="table-title">Configuración del Sistema</h3>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1.5rem;">
+                        <div style="background-color: white; border-radius: var(--border-radius); padding: 1.5rem; box-shadow: var(--shadow);">
+                            <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Configuración General</h4>
+                            <div style="margin-bottom: 1rem;">
+                                <p style="margin-bottom: 0.5rem; color: var(--gray-color);">Nombre de la Institución</p>
+                                <p style="font-weight: 600;">Colegio San José</p>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <p style="margin-bottom: 0.5rem; color: var(--gray-color);">Año Académico</p>
+                                <p style="font-weight: 600;">2023-2024</p>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <p style="margin-bottom: 0.5rem; color: var(--gray-color);">Idioma</p>
+                                <p style="font-weight: 600;">Español</p>
+                            </div>
+                            <button class="btn" style="background-color: var(--primary-color); color: white; margin-top: 1rem;">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                        </div>
+
+                        <div style="background-color: white; border-radius: var(--border-radius); padding: 1.5rem; box-shadow: var(--shadow);">
+                            <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Configuración de Usuarios</h4>
+                            <div style="margin-bottom: 1rem;">
+                                <p style="margin-bottom: 0.5rem; color: var(--gray-color);">Política de Contraseñas</p>
+                                <p style="font-weight: 600;">Alta</p>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <p style="margin-bottom: 0.5rem; color: var(--gray-color);">Expiración de Sesión</p>
+                                <p style="font-weight: 600;">30 minutos</p>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <p style="margin-bottom: 0.5rem; color: var(--gray-color);">Intentos de Acceso</p>
+                                <p style="font-weight: 600;">3 intentos</p>
+                            </div>
+                            <button class="btn" style="background-color: var(--primary-color); color: white; margin-top: 1rem;">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                        </div>
+
+                        <div style="background-color: white; border-radius: var(--border-radius); padding: 1.5rem; box-shadow: var(--shadow);">
+                            <h4 style="margin-bottom: 1rem; color: var(--primary-color);">Configuración de Pagos</h4>
+                            <div style="margin-bottom: 1rem;">
+                                <p style="margin-bottom: 0.5rem; color: var(--gray-color);">Pasarela de Pagos</p>
+                                <p style="font-weight: 600;">MercadoPago</p>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <p style="margin-bottom: 0.5rem; color: var(--gray-color);">Moneda</p>
+                                <p style="font-weight: 600;">COP</p>
+                            </div>
+                            <div style="margin-bottom: 1rem;">
+                                <p style="margin-bottom: 0.5rem; color: var(--gray-color);">Impuestos</p>
+                                <p style="font-weight: 600;">16%</p>
+                            </div>
+                            <button class="btn" style="background-color: var(--primary-color); color: white; margin-top: 1rem;">
+                                <i class="fas fa-edit"></i> Editar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Nuevo Usuario</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Modal content will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn" style="background-color: #f1f1f1; color: var(--dark-color);" onclick="closeModal()">Cancelar</button>
+                <button class="btn" style="background-color: var(--primary-color); color: white;" onclick="saveModal()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Current view
+        let currentView = 'dashboard';
+        let currentModalType = '';
+        let currentModalId = '';
+
+        // DOM Elements
+        const views = document.querySelectorAll('.view');
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        const modal = document.getElementById('modal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+
+        // Sample data
+        const sampleData = {
+            performance: {
+                labels: ['1°', '2°', '3°', '4°', '5°', '6°', '7°', '8°', '9°', '10°', '11°'],
+                datasets: [{
+                    label: 'Promedio',
+                    data: [4.2, 4.1, 4.0, 3.9, 4.3, 4.4, 4.2, 4.5, 4.3, 4.6, 4.4],
+                    backgroundColor: 'rgba(67, 151, 238, 0.2)',
+                    borderColor: 'rgba(67, 151, 238, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }]
+            },
+            revenue: {
+                labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                datasets: [{
+                    label: 'Ingresos',
+                    data: [30000000, 32000000, 35000000, 33000000, 36000000, 38000000, 40000000, 42000000, 41000000, 43000000, 45000000, 47000000],
+                    backgroundColor: 'rgba(79, 195, 247, 0.2)',
+                    borderColor: 'rgba(79, 195, 247, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }]
+            },
+            invoiceStatus: {
+                labels: ['Pagadas', 'Pendientes', 'Vencidas'],
+                datasets: [{
+                    data: [85, 10, 5],
+                    backgroundColor: [
+                        'rgba(46, 204, 113, 0.8)',
+                        'rgba(243, 156, 18, 0.8)',
+                        'rgba(231, 76, 60, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            performanceArea: {
+                labels: ['Matemáticas', 'Ciencias', 'Humanidades', 'Artes', 'Deportes'],
+                datasets: [{
+                    label: 'Promedio',
+                    data: [4.3, 4.1, 4.5, 4.2, 4.0],
+                    backgroundColor: 'rgba(67, 151, 238, 0.2)',
+                    borderColor: 'rgba(67, 151, 238, 1)',
+                    borderWidth: 2
+                }]
+            },
+            enrollmentTrend: {
+                labels: ['2019', '2020', '2021', '2022', '2023'],
+                datasets: [{
+                    label: 'Matrículas',
+                    data: [1100, 1150, 1200, 1245, 1280],
+                    backgroundColor: 'rgba(79, 195, 247, 0.2)',
+                    borderColor: 'rgba(79, 195, 247, 1)',
+                    borderWidth: 2,
+                    tension: 0.4
+                }]
+            },
+            billing: {
+                monthly: [30000000, 32000000, 35000000, 33000000, 36000000, 38000000, 40000000, 42000000, 41000000, 43000000, 45000000, 47000000],
+                status: [85, 10, 5]
+            }
+        };
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set up sidebar navigation
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const view = this.getAttribute('data-view');
+
+                    // Remove active class from all sidebar items
+                    sidebarItems.forEach(i => i.classList.remove('active'));
+
+                    // Add active class to clicked item
+                    this.classList.add('active');
+
+                    // Show the selected view
+                    showView(view);
+                });
+            });
+
+            // Load initial data
+            showView('dashboard');
+            loadCharts();
+
+            // Set up notification
+            document.querySelector('.notification').addEventListener('click', function() {
+                alert('Notificaciones:\n\n1. 8 nuevas matrículas pendientes\n2. 3 profesores necesitan aprobación\n3. 2 reportes generados automáticamente\n4. Actualización del sistema disponible');
+            });
+        });
+
+        // Show the selected view
+        function showView(view) {
+            // Hide all views
+            views.forEach(v => v.classList.remove('active'));
+
+            // Show the selected view
+            document.getElementById(view + 'View').classList.add('active');
+
+            // Update current view
+            currentView = view;
+
+            // Load charts for the current view
+            if (view === 'dashboard') {
+                loadCharts();
+            } else if (view === 'billing') {
+                loadBillingCharts();
+            } else if (view === 'reports') {
+                loadReportsCharts();
+            }
+        }
+
+        // Load charts
+        function loadCharts() {
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'line',
+                data: sampleData.performance,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 3,
+                            max: 5
+                        }
+                    }
+                }
+            });
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+            new Chart(revenueCtx, {
+                type: 'line',
+                data: {
+                    labels: sampleData.revenue.labels,
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: sampleData.revenue.datasets[0].data,
+                        backgroundColor: sampleData.revenue.datasets[0].backgroundColor,
+                        borderColor: sampleData.revenue.datasets[0].borderColor,
+                        borderWidth: 2,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load billing charts
+        function loadBillingCharts() {
+            // Monthly Billing Chart
+            const billingCtx = document.getElementById('billingChart').getContext('2d');
+            new Chart(billingCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'],
+                    datasets: [{
+                        label: 'Ingresos',
+                        data: sampleData.billing.monthly,
+                        backgroundColor: 'rgba(79, 195, 247, 0.6)',
+                        borderColor: 'rgba(79, 195, 247, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+
+            // Invoice Status Chart
+            const invoiceStatusCtx = document.getElementById('invoiceStatusChart').getContext('2d');
+            new Chart(invoiceStatusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Pagadas', 'Pendientes', 'Vencidas'],
+                    datasets: [{
+                        data: sampleData.billing.status,
+                        backgroundColor: [
+                            'rgba(46, 204, 113, 0.8)',
+                            'rgba(243, 156, 18, 0.8)',
+                            'rgba(231, 76, 60, 0.8)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load reports charts
+        function loadReportsCharts() {
+            // Performance Area Chart
+            const performanceAreaCtx = document.getElementById('performanceAreaChart').getContext('2d');
+            new Chart(performanceAreaCtx, {
+                type: 'bar',
+                data: sampleData.performanceArea,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 3,
+                            max: 5
+                        }
+                    }
+                }
+            });
+
+            // Enrollment Trend Chart
+            const enrollmentTrendCtx = document.getElementById('enrollmentTrendChart').getContext('2d');
+            new Chart(enrollmentTrendCtx, {
+                type: 'line',
+                data: sampleData.enrollmentTrend,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        title: {
+                            display: false,
+                        }
+                    }
+                }
+            });
+        }
+
+        // Open modal
+        function openModal(type, id = '') {
+            currentModalType = type;
+            currentModalId = id;
+
+            let title = '';
+            let content = '';
+
+            switch(type) {
+                case 'add':
+                    title = 'Nuevo Usuario';
+                    content = `
+                        <div class="form-group">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-input" placeholder="Ej: Juan Pérez Gómez">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-input" placeholder="Ej: juan.perez@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Rol</label>
+                            <select class="form-select">
+                                <option>Administrador</option>
+                                <option>Profesor</option>
+                                <option>Estudiante</option>
+                                <option>Padre de Familia</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contraseña</label>
+                            <input type="password" class="form-input" placeholder="********">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirmar Contraseña</label>
+                            <input type="password" class="form-input" placeholder="********">
+                        </div>
+                    `;
+                    break;
+                case 'edit':
+                    title = 'Editar Usuario';
+                    content = `
+                        <div class="form-group">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-input" value="Laura Gómez">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-input" value="laura.gomez@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Rol</label>
+                            <select class="form-select">
+                                <option selected>Administrador</option>
+                                <option>Profesor</option>
+                                <option>Estudiante</option>
+                                <option>Padre de Familia</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select">
+                                <option selected>Activo</option>
+                                <option>Inactivo</option>
+                                <option>Pendiente</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                case 'add-student':
+                    title = 'Nuevo Estudiante';
+                    content = `
+                        <div class="form-group">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-input" placeholder="Ej: María López">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Documento de Identidad</label>
+                            <input type="text" class="form-input" placeholder="Ej: 123456789">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Grado</label>
+                            <select class="form-select">
+                                <option>1°</option>
+                                <option>2°</option>
+                                <option>3°</option>
+                                <option>4°</option>
+                                <option>5°</option>
+                                <option>6°</option>
+                                <option>7°</option>
+                                <option>8°</option>
+                                <option>9°</option>
+                                <option>10°</option>
+                                <option>11°</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Grupo</label>
+                            <select class="form-select">
+                                <option>A</option>
+                                <option>B</option>
+                                <option>C</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-input" placeholder="Ej: maria.lopez@example.com">
+                        </div>
+                    `;
+                    break;
+                case 'edit-student':
+                    title = 'Editar Estudiante';
+                    content = `
+                        <div class="form-group">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-input" value="María López">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Documento de Identidad</label>
+                            <input type="text" class="form-input" value="123456789">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Grado</label>
+                            <select class="form-select">
+                                <option>1°</option>
+                                <option>2°</option>
+                                <option>3°</option>
+                                <option>4°</option>
+                                <option>5°</option>
+                                <option>6°</option>
+                                <option>7°</option>
+                                <option>8°</option>
+                                <option selected>9°</option>
+                                <option>10°</option>
+                                <option>11°</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Grupo</label>
+                            <select class="form-select">
+                                <option>A</option>
+                                <option>B</option>
+                                <option selected>C</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-input" value="maria.lopez@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select">
+                                <option selected>Activo</option>
+                                <option>Inactivo</option>
+                                <option>Pendiente</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                case 'add-teacher':
+                    title = 'Nuevo Profesor';
+                    content = `
+                        <div class="form-group">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-input" placeholder="Ej: Carlos Ramírez">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Documento de Identidad</label>
+                            <input type="text" class="form-input" placeholder="Ej: 987654321">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Asignatura</label>
+                            <select class="form-select">
+                                <option>Matemáticas</option>
+                                <option>Física</option>
+                                <option>Química</option>
+                                <option>Biología</option>
+                                <option>Historia</option>
+                                <option>Geografía</option>
+                                <option>Lengua</option>
+                                <option>Inglés</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-input" placeholder="Ej: carlos.ramirez@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Carga Horaria</label>
+                            <input type="number" class="form-input" placeholder="Ej: 24" min="1" max="40">
+                        </div>
+                    `;
+                    break;
+                case 'edit-teacher':
+                    title = 'Editar Profesor';
+                    content = `
+                        <div class="form-group">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-input" value="Carlos Ramírez">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Documento de Identidad</label>
+                            <input type="text" class="form-input" value="987654321">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Asignatura</label>
+                            <select class="form-select">
+                                <option>Matemáticas</option>
+                                <option>Física</option>
+                                <option selected>Química</option>
+                                <option>Biología</option>
+                                <option>Historia</option>
+                                <option>Geografía</option>
+                                <option>Lengua</option>
+                                <option>Inglés</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-input" value="carlos.ramirez@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Carga Horaria</label>
+                            <input type="number" class="form-input" value="24" min="1" max="40">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select">
+                                <option selected>Activo</option>
+                                <option>Inactivo</option>
+                            </select>
+                        </div>
+                    `;
+                    break;
+                case 'add-report':
+                    title = 'Nuevo Reporte';
+                    content = `
+                        <div class="form-group">
+                            <label class="form-label">Nombre del Reporte</label>
+                            <input type="text" class="form-input" placeholder="Ej: Rendimiento Académico 2023">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Tipo de Reporte</label>
+                            <select class="form-select">
+                                <option>PDF</option>
+                                <option>Excel</option>
+                                <option>CSV</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Periodo</label>
+                            <select class="form-select">
+                                <option>Mensual</option>
+                                <option>Trimestral</option>
+                                <option selected>Anual</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Descripción</label>
+                            <textarea class="form-input" rows="4" placeholder="Descripción del reporte..."></textarea>
+                        </div>
+                    `;
+                    break;
+            }
+
+            modalTitle.textContent = title;
+            modalBody.innerHTML = content;
+            modal.classList.add('active');
+        }
+
+        // Close modal
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        // Save modal
+        function saveModal() {
+            alert(`Datos guardados correctamente para ${currentModalType === 'edit' ? 'editar' : 'crear'} ${currentModalType.replace('-', ' ')}`);
+
+            // Simulate saving data
+            if (currentModalType === 'add' || currentModalType === 'edit') {
+                // Refresh user table
+                if (currentView === 'dashboard') {
+                    // In a real app, you would refresh the data here
+                }
+            }
+
+            closeModal();
+        }
+
+        // Format number with commas
+        function formatNumber(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+    </script>
+</body>
+</html>
